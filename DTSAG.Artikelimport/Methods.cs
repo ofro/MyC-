@@ -19,7 +19,7 @@ namespace DTSAG.Artikelimport
         {
             ArtikelDatenCollection dc = new ArtikelDatenCollection();
             string[] separator = new string[] { "|@@|" };
-            var result = Data.Split(separator, StringSplitOptions.None).ToList();
+            var result = Data.Split(separator, StringSplitOptions.None).ToList(); 
             int index = 0;
             result.ForEach(r =>
             {
