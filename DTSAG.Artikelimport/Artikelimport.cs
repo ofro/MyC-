@@ -35,6 +35,7 @@ namespace DTSAG.Artikelimport
         {
             var dto = request.Data;
             var uuid = dto.UuidValue;
+            RowSet dtoChildrenExceldaten = new RowSet();
             switch (request.MethodName)
             {
                 //Verfügbare Methoden:
@@ -44,7 +45,7 @@ namespace DTSAG.Artikelimport
 
                     int count = request.Data.ContainsField("DTCountExcelRows") ? Conversion.ToInt32(request.Data["DTCountExcelRows"]) : 0;
 
-                    RowSet dtoChildrenExceldaten = new RowSet();
+                    
 
                     for (int i = 0; i < count; i++)
                     {
@@ -56,24 +57,17 @@ namespace DTSAG.Artikelimport
                         dtoChild.Fill("ID", i);
                         dtoChildrenExceldaten.Add(dtoChild);
                     }
-                    //if ((bo.BelegtexteKunden != null))
-                    //{
-                    //    foreach (Sage100.Rezept13.BelegtextKundenItem boChild in bo.BelegtexteKunden)
-                    //    {
-                    //        Row dtoChildBelegtexteKunden = new Row();
-                    //        FillDtoBelegtextKunden(dtoChildBelegtexteKunden, boChild);
-                    //        dtoChildrenBelegtexteKunden.Add(dtoChildBelegtexteKunden);
-                    //    }
-                    //}
-                    //dto.SetChild(dtoChildrenBelegtexteKunden, "BelegtexteKunden");
                     request.Data.SetChild(dtoChildrenExceldaten, "Importdaten"); //Name Importdaten ist der virtuelle Name der Detail Datenstruktur 
                     break;
                 case "WriteData":
                     string data = dto.ContainsField("RowSetExcelDaten")?dto["RowSetExcelDaten"].ToString():"";
+                    Row dtoChildren = dto.ContainsChild("Importdaten")?(Row)dto["Importdaten"] : null;
                     if (!string.IsNullOrEmpty(data))
                     {
                         ArtikelDatenCollection dc = new ArtikelDatenCollection();
-                        
+                        var ds = Methods.ReadDataSet(data);
+                        dtoChildrenExceldaten = Methods.FillMdeImportdaten(ds);
+                        request.Data.SetChild(dtoChildrenExceldaten,"Importdaten");
                     }
                     break;
 

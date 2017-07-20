@@ -32,10 +32,6 @@ namespace DTSAG.Artikelimport
         public string Gesperrt { get; set; }
         public string Error { get; set; }
         public string UUID { get; set; }
-
-        
-
-
     }
 
 }
