@@ -33,19 +33,19 @@ namespace DTSAG.Artikelimport
 
         public override DataServiceExecuteResponse Execute(DataServiceExecuteRequest request)
         {
-
+            var dto = request.Data;
+            var uuid = dto.UuidValue;
             switch (request.MethodName)
             {
                 //Verfügbare Methoden:
                 //WriteDummy: Erstellt ein Dunmmy Rowset mit der Anzahl der Datenzeilen analog der Zeilenanzahl der Exceldatei, hierdurch ist eine Iteration im Macro möglich
                 // um im nächsten Step Clientseitig die Daten einzulesen
                 case "WriteDummy":
-                    var dto = request.Data;
-                    var uuid = dto.UuidValue;
+
                     int count = request.Data.ContainsField("DTCountExcelRows") ? Conversion.ToInt32(request.Data["DTCountExcelRows"]) : 0;
 
                     RowSet dtoChildrenExceldaten = new RowSet();
-                    
+
                     for (int i = 0; i < count; i++)
                     {
                         Row dtoChild = new Row();
@@ -53,7 +53,7 @@ namespace DTSAG.Artikelimport
                         {
                             dtoChild.UuidValue = Guid.NewGuid().ToString();
                         }
-                        dtoChild.Fill("ID",i);
+                        dtoChild.Fill("ID", i);
                         dtoChildrenExceldaten.Add(dtoChild);
                     }
                     //if ((bo.BelegtexteKunden != null))
@@ -66,10 +66,15 @@ namespace DTSAG.Artikelimport
                     //    }
                     //}
                     //dto.SetChild(dtoChildrenBelegtexteKunden, "BelegtexteKunden");
-                    request.Data.SetChild(dtoChildrenExceldaten,"Importdaten" ); //Name Importdaten ist der virtuelle Name der Detail Datenstruktur 
+                    request.Data.SetChild(dtoChildrenExceldaten, "Importdaten"); //Name Importdaten ist der virtuelle Name der Detail Datenstruktur 
                     break;
                 case "WriteData":
-
+                    string data = dto.ContainsField("RowSetExcelDaten")?dto["RowSetExcelDaten"].ToString():"";
+                    if (!string.IsNullOrEmpty(data))
+                    {
+                        ArtikelDatenCollection dc = new ArtikelDatenCollection();
+                        
+                    }
                     break;
 
             }
@@ -107,7 +112,7 @@ namespace DTSAG.Artikelimport
             result.KeyValue = String.Empty;
             result.VersionStamp = String.Empty;
             result.UuidValue = Guid.NewGuid().ToString();
-            result.Fill("DTGuid",result.UuidValue);
+            result.Fill("DTGuid", result.UuidValue);
             result.Fill("DTExceldatei", "Excel Datei");
             result.Fill("DTArtikelvorlage", "Artikel");
             result.Fill("DTLieferant", "Lieferant");
@@ -115,7 +120,7 @@ namespace DTSAG.Artikelimport
             RowSet dtoChildExceldaten = new RowSet();
             Row dtoChild = new Row();
             dtoChild.UuidValue = Guid.NewGuid().ToString();
-            dtoChild.VersionStamp =string.Empty;
+            dtoChild.VersionStamp = string.Empty;
 
             dtoChild.Fill("ID", 1);
             dtoChild.Fill("Text", "Text");
